@@ -16,4 +16,6 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 Route::get('/', 'HomeController@index')->name('home');
+Route::redirect('/home', '/');
 Route::get('/listings', 'ListingController@index')->name('listing');
+Route::get('/donate', 'DonateController@index')->name('donate');
