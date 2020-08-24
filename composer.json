@@ -15,7 +15,8 @@
         "laravel/framework": "^7.24",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.1",
-        "prstyocode/coinmarketcap-wrapper": "dev-master"
+        "prstyocode/coinmarketcap-wrapper": "dev-master",
+        "pusher/pusher-php-server": "~4.0"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

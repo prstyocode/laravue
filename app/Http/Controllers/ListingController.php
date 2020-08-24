@@ -31,7 +31,7 @@ class ListingController extends Controller
 
     $run = $cmc->getCryptocurrencyListingsLatest(['convert' => 'IDR']);
 
-    return view('landing', ['listings' => $run->data]);
+    return view('listings', ['listings' => $run->data]);
   }
 
   public function indexAPI()

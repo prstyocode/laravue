@@ -4,6 +4,8 @@
  * building robust, powerful web applications using Vue and Laravel.
  */
 
+const { store } = require("./store");
+
 require("./bootstrap");
 
 window.Vue = require("vue");
@@ -20,12 +22,16 @@ window.Vue = require("vue");
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component(
-    "example-component",
-    require("./components/ExampleComponent.vue").default
+  "example-component",
+  require("./components/ExampleComponent.vue").default
 );
 Vue.component(
-    "crypto-listings",
-    require("./components/CryptoListings.vue").default
+  "crypto-listings",
+  require("./components/CryptoListings.vue").default
+);
+Vue.component(
+  "notification-badge",
+  require("./components/NotificationBadge.vue").default
 );
 
 /**
@@ -35,5 +41,6 @@ Vue.component(
  */
 
 const app = new Vue({
-    el: "#app"
+  el: "#app",
+  store: store
 });
