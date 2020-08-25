@@ -5,5 +5,5 @@ this project has no real purpose. It is just my playground of Laravel & Vue.js s
 ### Implemented Feature
 
 - [x] Connect to CoinMarketCap API
-- [x] Realtime Functionality
+- [x] Realtime Client-Server Communication
 - [x] Connect to Spotify API
