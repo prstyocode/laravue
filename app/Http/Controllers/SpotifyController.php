@@ -65,8 +65,8 @@ class SpotifyController extends Controller
 
 		$result = json_decode($response->getBody()->getContents());
 
-		Cookie::queue('access_token', $result->access_token, $result->expires_in);
-		Cookie::queue('refresh_token', $result->refresh_token);
+		Cookie::queue('spotify_access_token', $result->access_token, $result->expires_in);
+		Cookie::queue('spotify_refresh_token', $result->refresh_token);
 
 		return redirect()->back();
 	}
@@ -75,7 +75,7 @@ class SpotifyController extends Controller
 	{
 		$client = new Client();
 
-		$refreshToken = Cookie::get('refresh_token');
+		$refreshToken = Cookie::get('spotify_refresh_token');
 
 		if (!$refreshToken) redirect()->to('/spotify/connect')->send();
 
@@ -97,14 +97,14 @@ class SpotifyController extends Controller
 
 		$result = json_decode($response->getBody()->getContents());
 
-		Cookie::queue('access_token', $result->access_token, $result->expires_in);
+		Cookie::queue('spotify_access_token', $result->access_token, $result->expires_in);
 
 		return $result->access_token;
 	}
 
 	private function isAuthenticated()
 	{
-		$this->accesToken = Cookie::get('access_token');
+		$this->accesToken = Cookie::get('spotify_access_token');
 
 		if (!$this->accesToken) {
 			$this->accesToken = $this->refreshToken();
