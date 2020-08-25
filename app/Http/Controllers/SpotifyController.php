@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Redirect;
 class SpotifyController extends Controller
 {
 	private $accesToken;
+
+	const BASE_URL = 'https://api.spotify.com/v1/';
 	/**
 	 * Create a new controller instance.
 	 *
@@ -68,7 +70,7 @@ class SpotifyController extends Controller
 		Cookie::queue('spotify_access_token', $result->access_token, $result->expires_in);
 		Cookie::queue('spotify_refresh_token', $result->refresh_token);
 
-		return redirect()->back();
+		return redirect()->route('spotify.get-user-users-profile');
 	}
 
 	public function refreshToken()
@@ -120,7 +122,7 @@ class SpotifyController extends Controller
 
 		$response = $client->request(
 			'GET',
-			'https://api.spotify.com/v1/me/tracks',
+			self::BASE_URL . 'me/tracks',
 			[
 				'headers' => [
 					'Authorization' => 'Bearer ' . $this->accesToken,
@@ -142,7 +144,7 @@ class SpotifyController extends Controller
 
 		$response = $client->request(
 			'GET',
-			'https://api.spotify.com/v1/me',
+			self::BASE_URL . 'me',
 			[
 				'headers' => [
 					'Authorization' => 'Bearer ' . $this->accesToken,
