@@ -102,7 +102,7 @@ class SpotifyController extends Controller
 		return $result->access_token;
 	}
 
-	private function isAuthenticated()
+	private function checkAuth()
 	{
 		$this->accesToken = Cookie::get('spotify_access_token');
 
@@ -114,7 +114,7 @@ class SpotifyController extends Controller
 	public function getUserSavedTracks()
 	{
 
-		$this->isAuthenticated();
+		$this->checkAuth();
 
 		$client = new Client();
 
@@ -136,7 +136,7 @@ class SpotifyController extends Controller
 	public function getUsersProfile()
 	{
 
-		$this->isAuthenticated();
+		$this->checkAuth();
 
 		$client = new Client();
 
