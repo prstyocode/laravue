@@ -19,3 +19,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::get('/listings', 'ListingController@indexAPI')->name('listing');
+Route::get('/spotify/saved-tracks', 'SpotifyController@getUserSavedTracks')->name('spotify.get-user-saved-tracks');
+Route::get('/spotify/users-profile', 'SpotifyController@getUsersProfile')->name('spotify.get-user-users-profile');

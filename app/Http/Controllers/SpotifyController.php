@@ -8,11 +8,12 @@ use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Redirect;
 
 class SpotifyController extends Controller
 {
-	private $accesToken;
+	private $accessToken;
 
 	const BASE_URL = 'https://api.spotify.com/v1/';
 	/**
@@ -70,7 +71,7 @@ class SpotifyController extends Controller
 		Cookie::queue('spotify_access_token', $result->access_token, $result->expires_in);
 		Cookie::queue('spotify_refresh_token', $result->refresh_token);
 
-		return redirect()->route('spotify.get-user-users-profile');
+		return redirect()->route('home');
 	}
 
 	public function refreshToken()
@@ -106,54 +107,50 @@ class SpotifyController extends Controller
 
 	private function checkAuth()
 	{
-		$this->accesToken = Cookie::get('spotify_access_token');
+		$this->accessToken = Cookie::get('spotify_access_token');
 
-		if (!$this->accesToken) {
-			$this->accesToken = $this->refreshToken();
+		if (!$this->accessToken) {
+			$this->accessToken = $this->refreshToken();
 		}
+	}
+
+	private function buildRequest($method, $endpoint)
+	{
+		$this->checkAuth();
+
+		$decrypted = Crypt::decrypt($this->accessToken, false);
+		$accessToken = explode('|', $decrypted)[1];
+
+		$client = new Client();
+
+		try {
+			$response = $client->request(
+				$method,
+				self::BASE_URL . $endpoint,
+				[
+					'headers' => [
+						'Authorization' => 'Bearer ' . $accessToken,
+					],
+				]
+			);
+		} catch (\Throwable $th) {
+			return redirect()->to('/spotify/connect')->send();
+		}
+
+		return json_decode($response->getBody()->getContents());
 	}
 
 	public function getUserSavedTracks()
 	{
+		$result = $this->buildRequest('GET', 'me/tracks');
 
-		$this->checkAuth();
-
-		$client = new Client();
-
-		$response = $client->request(
-			'GET',
-			self::BASE_URL . 'me/tracks',
-			[
-				'headers' => [
-					'Authorization' => 'Bearer ' . $this->accesToken,
-				],
-			]
-		);
-
-		$result = $response->getBody()->getContents();
-
-		return response()->json(json_decode($result));
+		return response()->json($result);
 	}
 
 	public function getUsersProfile()
 	{
+		$result = $this->buildRequest('GET', 'me');
 
-		$this->checkAuth();
-
-		$client = new Client();
-
-		$response = $client->request(
-			'GET',
-			self::BASE_URL . 'me',
-			[
-				'headers' => [
-					'Authorization' => 'Bearer ' . $this->accesToken,
-				],
-			]
-		);
-
-		$result = $response->getBody()->getContents();
-
-		return response()->json(json_decode($result));
+		return response()->json($result);
 	}
 }
