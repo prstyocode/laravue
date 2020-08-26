@@ -28,6 +28,19 @@ class SpotifyController extends Controller
 	 *
 	 * @return \Illuminate\Contracts\Support\Renderable
 	 */
+
+	public function index()
+	{
+
+		$users = null;
+
+		if (Cookie::get('spotify_access_token')) {
+			$users = json_decode($this->getUsersProfile()->content());
+		}
+
+		return view('spotify.index', ['users' => $users]);
+	}
+
 	public function connect()
 	{
 		$params = [
@@ -68,7 +81,14 @@ class SpotifyController extends Controller
 		Cookie::queue('spotify_access_token', $result->access_token, $result->expires_in);
 		Cookie::queue('spotify_refresh_token', $result->refresh_token);
 
-		return redirect()->route('home');
+		return redirect()->route('spotify.home');
+	}
+
+	public function logout()
+	{
+		Cookie::queue(Cookie::forget('spotify_access_token'));
+		Cookie::queue(Cookie::forget('spotify_refresh_token'));
+		return redirect()->route('spotify.home');
 	}
 
 	public function refreshToken()
@@ -115,8 +135,13 @@ class SpotifyController extends Controller
 	{
 		$this->checkAuth();
 
-		$decrypted = Crypt::decrypt($this->accessToken, false);
-		$accessToken = explode('|', $decrypted)[1];
+		$decodedToken = base64_decode($this->accessToken);
+		if (json_decode($decodedToken)) {
+			$decrypted = Crypt::decrypt($this->accessToken, false);
+			$accessToken = explode('|', $decrypted)[1];
+		} else {
+			$accessToken = $this->accessToken;
+		}
 
 		$client = new Client();
 
@@ -141,13 +166,13 @@ class SpotifyController extends Controller
 	{
 		$result = $this->buildRequest('GET', 'me/tracks');
 
-		return response()->json($result);
+		return response()->json($result, 200);
 	}
 
 	public function getUsersProfile()
 	{
 		$result = $this->buildRequest('GET', 'me');
 
-		return response()->json($result);
+		return response()->json($result, 200);
 	}
 }
